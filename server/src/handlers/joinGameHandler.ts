@@ -1,12 +1,13 @@
 import { WebSocketType } from '../types';
 import { CODE_TO_GAME, GAMES } from '../store/store';
-import { getUserByWs } from '../utils';
+import { broadcastGame, getUserByWs, sendError } from '../utils';
 
-export const joinGameHadler = (ws: WebSocketType, data: any) => {
+export const joinGameHandler = (ws: WebSocketType, data: any) => {
   const gameId = CODE_TO_GAME.get(data.code);
 
   if (!gameId) {
     console.log('Game not found');
+    sendError(ws, 'Game not found');
     return;
   }
 
@@ -14,6 +15,7 @@ export const joinGameHadler = (ws: WebSocketType, data: any) => {
 
   if (!game) {
     console.log('Game missing');
+    sendError(ws, 'Game missing');
     return;
   }
 
@@ -21,6 +23,7 @@ export const joinGameHadler = (ws: WebSocketType, data: any) => {
 
   if (!user) {
     console.log('User not found');
+    sendError(ws, 'User not found');
     return;
   }
 
@@ -63,28 +66,20 @@ export const joinGameHadler = (ws: WebSocketType, data: any) => {
   );
 
   game.players.forEach(({ ws }) => {
-    ws?.send(
-      JSON.stringify({
-        type: 'player_joined',
-        data: {
-          playerName: user.name,
-          playerCount: game.players.length,
-        },
-        id: 0,
-      }),
-    );
+    broadcastGame(game, 'player_joined', {
+      playerName: user.name,
+      playerCount: game.players.length,
+    });
 
-    ws?.send(
-      JSON.stringify({
-        type: 'update_players',
-        data: game.players.map(({ index, name, score }) => {
-          return {
-            name,
-            index,
-            score,
-          };
-        }),
-        id: 0,
+    broadcastGame(
+      game,
+      'update_players',
+      game.players.map(({ index, name, score }) => {
+        return {
+          name,
+          index,
+          score,
+        };
       }),
     );
   });

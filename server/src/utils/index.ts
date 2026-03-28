@@ -9,7 +9,7 @@ export const getUserByWs = (ws: WebSocketType) => {
   return USERS.get(userName) || null;
 };
 
-export const send = (ws: WebSocket, type: string, data: any) => {
+export const send = (ws: WebSocketType, type: string, data: any) => {
   ws.send(
     JSON.stringify({
       type,
@@ -19,15 +19,15 @@ export const send = (ws: WebSocket, type: string, data: any) => {
   );
 };
 
-// export const broadcast = (game: Game, type: string, data: any) => {
-//   game.players.forEach((player) => {
-//     if (player.ws) {
-//       send(player.ws, type, data);
-//     }
-//   });
-// };
+export const broadcastGame = (game: Game, type: string, data: any) => {
+  game.players.forEach((p) => {
+    p.ws?.send(JSON.stringify({ type, data, id: 0 }));
+  });
 
-export const sendError = (ws: WebSocket, message: string) => {
+  game.hostWs?.send(JSON.stringify({ type, data, id: 0 }));
+};
+
+export const sendError = (ws: WebSocketType, message: string) => {
   ws.send(
     JSON.stringify({
       type: 'error',

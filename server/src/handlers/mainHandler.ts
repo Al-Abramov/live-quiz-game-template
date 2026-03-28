@@ -1,8 +1,9 @@
 import { WSMessage } from '../types';
 import { WebSocket } from 'ws';
 import { regHandler } from './regHandler';
-import { createGameHadler } from './createGameHadler';
-import { joinGameHadler } from './joinGameHadler';
+import { createGameHandler } from './createGameHandler';
+import { joinGameHandler } from './joinGameHandler';
+import { startGameHandler } from './startGameHandler';
 
 export const handlerMessage = (ws: WebSocket, message: WSMessage) => {
   const { type, data } = message;
@@ -13,14 +14,15 @@ export const handlerMessage = (ws: WebSocket, message: WSMessage) => {
       break;
 
     case 'create_game':
-      createGameHadler(ws, data);
+      createGameHandler(ws, data);
       break;
 
     case 'join_game':
-      joinGameHadler(ws, data);
+      joinGameHandler(ws, data);
       break;
 
-    case 'player_joined':
+    case 'start_game':
+      startGameHandler(ws, data);
       break;
 
     case 'update_players':

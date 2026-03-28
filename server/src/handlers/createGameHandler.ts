@@ -3,7 +3,7 @@ import { Game, WebSocketType } from '../types';
 import { generateCode, getUserByWs } from '../utils';
 import { CODE_TO_GAME, GAMES } from '../store/store';
 
-export const createGameHadler = (ws: WebSocketType, data: any) => {
+export const createGameHandler = (ws: WebSocketType, data: any) => {
   const user = getUserByWs(ws);
   const roomCode = generateCode();
   const gameId = randomUUID();
@@ -17,6 +17,7 @@ export const createGameHadler = (ws: WebSocketType, data: any) => {
     id: gameId,
     code: roomCode,
     hostId: user?.index || '',
+    hostWs: ws,
     questions: data.questions,
     players: [],
     currentQuestion: -1,
