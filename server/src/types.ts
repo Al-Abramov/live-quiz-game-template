@@ -21,6 +21,7 @@ export interface Game {
   id: string;
   code: string;
   hostId: string;
+  hostWs?: WebSocket;
   questions: Question[];
   players: Player[];
   currentQuestion: number;
@@ -65,3 +66,5 @@ export interface AnswerData {
   questionIndex: number;
   answerIndex: number;
 }
+
+export type WebSocketType = WebSocket;
