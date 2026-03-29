@@ -1,6 +1,6 @@
 import { WebSocketType } from '../types';
 import { CODE_TO_GAME, GAMES } from '../store/store';
-import { broadcastGame, getUserByWs, sendError } from '../utils';
+import { broadcastGame, finalizeQuestion, getUserByWs, nextQuestion, sendError } from '../utils';
 
 export const startGameHandler = (ws: WebSocketType, data: any) => {
   const { gameId } = data;
@@ -27,23 +27,6 @@ export const startGameHandler = (ws: WebSocketType, data: any) => {
   }
 
   game.status = 'in_progress';
-  game.currentQuestion = 0;
-  game.playerAnswers = new Map();
-  game.questionStartTime = Date.now();
 
-  const question = game.questions[game.currentQuestion];
-
-  const sendQuestionData = {
-    questionNumber: game.currentQuestion,
-    totalQuestions: game.questions.length,
-    text: question.text,
-    options: question.options,
-    timeLimitSec: question.timeLimitSec,
-  };
-
-  broadcastGame(game, 'question', sendQuestionData);
-
-  game.questionTimer = setTimeout(() => {
-    // finalizeQuestion(game);
-  }, question.timeLimitSec * 1000);
+  nextQuestion(game);
 };
